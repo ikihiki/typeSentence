@@ -7,7 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 // --------------------------------------
@@ -23,6 +24,7 @@ model User {
 
   tokens   Token[]
   sessions Session[]
+  result   Result[]
 }
 
 model Session {
@@ -63,3 +65,26 @@ model Token {
 // enum TokenType {
 //   RESET_PASSWORD
 // }
+
+model Problem {
+  id        Int      @id @default(autoincrement())
+  japanese  String
+  english   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  result    Result[]
+}
+
+model Result {
+  userId                    Int
+  user                      User     @relation(fields: [userId], references: [id])
+  problemId                 Int
+  problem                   Problem  @relation(fields: [problemId], references: [id])
+  lastAnswerd               DateTime
+  consecutiveCorrectAnswers Int
+  nextSettingQuestion       DateTime
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@id([userId, problemId])
+}
